@@ -7,8 +7,8 @@
     "markdown-it-plugin",
     "markdown-it",
     "markdown",
-    "subscript",
-    "sub"
+    "abbreviation",
+    "abbr"
   ],
   "license": "MIT",
   "ignore": [
