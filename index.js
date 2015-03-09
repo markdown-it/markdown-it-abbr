@@ -8,14 +8,7 @@ var PUNCT_CHARS = ' \n()[]\'".,!?-';
 
 module.exports = function sub_plugin(md) {
   var escapeRE        = md.utils.escapeRE,
-      arrayReplaceAt  = md.utils.arrayReplaceAt,
-      replaceEntities = md.utils.replaceEntities,
-      escapeHtml      = md.utils.replaceEntities;
-
-  md.renderer.rules.abbr_open  = function abbr_open(tokens, idx) {
-    return '<abbr title="' + escapeHtml(replaceEntities(tokens[idx].title)) + '">';
-  };
-  md.renderer.rules.abbr_close = function abbr_close() { return '</abbr>'; };
+      arrayReplaceAt  = md.utils.arrayReplaceAt;
 
 
   function abbr_def(state, startLine, endLine, silent) {
@@ -63,7 +56,8 @@ module.exports = function sub_plugin(md) {
 
 
   function abbr_replace(state) {
-    var i, j, l, tokens, token, text, nodes, pos, level, reg, m, regText,
+    var i, j, l, tokens, token, text, nodes, pos, reg, m, regText,
+        currentToken,
         blockTokens = state.tokens;
 
     if (!state.env.abbreviations) { return; }
@@ -85,49 +79,41 @@ module.exports = function sub_plugin(md) {
 
       // We scan from the end, to keep position when new tags added.
       for (i = tokens.length - 1; i >= 0; i--) {
-        token = tokens[i];
-        if (token.type !== 'text') { continue; }
+        currentToken = tokens[i];
+        if (currentToken.type !== 'text') { continue; }
 
         pos = 0;
-        text = token.content;
+        text = currentToken.content;
         reg.lastIndex = 0;
-        level = token.level;
         nodes = [];
 
         while ((m = reg.exec(text))) {
           if (reg.lastIndex > pos) {
-            nodes.push({
-              type: 'text',
-              content: text.slice(pos, m.index + m[1].length),
-              level: level
-            });
+            token         = new state.Token('text', '', 0);
+            token.content = text.slice(pos, m.index + m[1].length);
+            nodes.push(token);
           }
 
-          nodes.push({
-            type: 'abbr_open',
-            title: state.env.abbreviations[':' + m[2]],
-            level: level++
-          });
-          nodes.push({
-            type: 'text',
-            content: m[2],
-            level: level
-          });
-          nodes.push({
-            type: 'abbr_close',
-            level: --level
-          });
+          token         = new state.Token('abbr_open', 'abbr', 1);
+          token.attrs   = [ [ 'title', state.env.abbreviations[':' + m[2]] ] ];
+          nodes.push(token);
+
+          token         = new state.Token('text', '', 0);
+          token.content = m[2];
+          nodes.push(token);
+
+          token         = new state.Token('abbr_close', 'abbr', -1);
+          nodes.push(token);
+
           pos = reg.lastIndex - m[3].length;
         }
 
         if (!nodes.length) { continue; }
 
         if (pos < text.length) {
-          nodes.push({
-            type: 'text',
-            content: text.slice(pos),
-            level: level
-          });
+          token         = new state.Token('text', '', 0);
+          token.content = text.slice(pos);
+          nodes.push(token);
         }
 
         // replace current node
