@@ -6,6 +6,8 @@
 
 > Abbreviation (`<abbr>`) tag plugin for [markdown-it](https://github.com/markdown-it/markdown-it) markdown parser.
 
+__v1.+ requires `markdown-it` v4.+, see changelog.__
+
 Markup is based on [php markdown extra](https://michelf.ca/projects/php-markdown/extra/#abbr) definition, but without multiline support.
 
 Markdown:
