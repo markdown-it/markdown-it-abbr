@@ -3,7 +3,13 @@
 'use strict';
 
 
-var PUNCT_CHARS = ' \n()[]\'".,!?-';
+// ASCII characters in Cc, Sc, Sm, Sk categories we should terminate on;
+// you can check character classes here:
+// http://www.unicode.org/Public/UNIDATA/UnicodeData.txt
+var OTHER_CHARS      = ' \r\n$+<=>^`|~';
+
+var UNICODE_PUNCT_RE = require('uc.micro/categories/P/regex').source;
+var UNICODE_SPACE_RE = require('uc.micro/categories/Z/regex').source;
 
 
 module.exports = function sub_plugin(md) {
@@ -56,21 +62,31 @@ module.exports = function sub_plugin(md) {
 
 
   function abbr_replace(state) {
-    var i, j, l, tokens, token, text, nodes, pos, reg, m, regText,
+    var i, j, l, tokens, token, text, nodes, pos, reg, m, regText, regSimple,
         currentToken,
         blockTokens = state.tokens;
 
     if (!state.env.abbreviations) { return; }
     if (!state.env.abbrRegExp) {
-      regText = '(^|[' + PUNCT_CHARS.split('').map(escapeRE).join('') + '])'
+      state.env.abbrRegExpSimple = new RegExp('(?:' +
+        Object.keys(state.env.abbreviations).map(function (x) {
+          return x.substr(1);
+        }).sort(function (a, b) {
+          return b.length - a.length;
+        }).map(escapeRE).join('|') + ')');
+
+      regText = '(^|' + UNICODE_PUNCT_RE + '|' + UNICODE_SPACE_RE +
+                      '|[' + OTHER_CHARS.split('').map(escapeRE).join('') + '])'
               + '(' + Object.keys(state.env.abbreviations).map(function (x) {
                         return x.substr(1);
                       }).sort(function (a, b) {
                         return b.length - a.length;
                       }).map(escapeRE).join('|') + ')'
-              + '($|[' + PUNCT_CHARS.split('').map(escapeRE).join('') + '])';
+              + '($|' + UNICODE_PUNCT_RE + '|' + UNICODE_SPACE_RE +
+                      '|[' + OTHER_CHARS.split('').map(escapeRE).join('') + '])';
       state.env.abbrRegExp = new RegExp(regText, 'g');
     }
+    regSimple = state.env.abbrRegExpSimple;
     reg = state.env.abbrRegExp;
 
     for (j = 0, l = blockTokens.length; j < l; j++) {
@@ -86,6 +102,10 @@ module.exports = function sub_plugin(md) {
         text = currentToken.content;
         reg.lastIndex = 0;
         nodes = [];
+
+        // fast regexp run to determine whether there are any abbreviated words
+        // in the current token
+        if (!regSimple.test(text)) { continue; }
 
         while ((m = reg.exec(text))) {
           if (reg.lastIndex > pos) {
@@ -123,5 +143,6 @@ module.exports = function sub_plugin(md) {
   }
 
   md.block.ruler.before('reference', 'abbr_def', abbr_def, { alt: [ 'paragraph', 'reference' ] });
-  md.core.ruler.after('inline', 'abbr_replace', abbr_replace);
+
+  md.core.ruler.after('linkify', 'abbr_replace', abbr_replace);
 };

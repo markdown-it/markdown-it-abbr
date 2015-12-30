@@ -33,6 +33,7 @@
     "markdown-it-testgen": "~0.1.0",
     "mocha": "*",
     "request": "*",
+    "uc.micro": "*",
     "uglify-js": "*"
   }
 }

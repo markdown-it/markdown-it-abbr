@@ -79,6 +79,16 @@ foobar
 .
 
 
+Interaction with linkifier:
+.
+http://example.com/foo/
+
+*[foo]: something
+.
+<p><a href="http://example.com/foo/">http://example.com/<abbr title="something">foo</abbr>/</a></p>
+.
+
+
 Security 1
 .
 *[__proto__]: blah
