@@ -1,3 +1,10 @@
+1.0.1 / 2015-12-31
+------------------
+
+- Resolved collision with `linkify-it`.
+- Extended list of start/stop punctuation characters to unicode ones.
+
+
 1.0.0 / 2015-03-12
 ------------------
 
