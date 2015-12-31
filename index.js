@@ -67,27 +67,26 @@ module.exports = function sub_plugin(md) {
         blockTokens = state.tokens;
 
     if (!state.env.abbreviations) { return; }
-    if (!state.env.abbrRegExp) {
-      state.env.abbrRegExpSimple = new RegExp('(?:' +
-        Object.keys(state.env.abbreviations).map(function (x) {
-          return x.substr(1);
-        }).sort(function (a, b) {
-          return b.length - a.length;
-        }).map(escapeRE).join('|') + ')');
 
-      regText = '(^|' + UNICODE_PUNCT_RE + '|' + UNICODE_SPACE_RE +
-                      '|[' + OTHER_CHARS.split('').map(escapeRE).join('') + '])'
-              + '(' + Object.keys(state.env.abbreviations).map(function (x) {
-                        return x.substr(1);
-                      }).sort(function (a, b) {
-                        return b.length - a.length;
-                      }).map(escapeRE).join('|') + ')'
-              + '($|' + UNICODE_PUNCT_RE + '|' + UNICODE_SPACE_RE +
-                      '|[' + OTHER_CHARS.split('').map(escapeRE).join('') + '])';
-      state.env.abbrRegExp = new RegExp(regText, 'g');
-    }
-    regSimple = state.env.abbrRegExpSimple;
-    reg = state.env.abbrRegExp;
+    regSimple = new RegExp('(?:' +
+      Object.keys(state.env.abbreviations).map(function (x) {
+        return x.substr(1);
+      }).sort(function (a, b) {
+        return b.length - a.length;
+      }).map(escapeRE).join('|') +
+    ')');
+
+    regText = '(^|' + UNICODE_PUNCT_RE + '|' + UNICODE_SPACE_RE +
+                    '|[' + OTHER_CHARS.split('').map(escapeRE).join('') + '])'
+            + '(' + Object.keys(state.env.abbreviations).map(function (x) {
+                      return x.substr(1);
+                    }).sort(function (a, b) {
+                      return b.length - a.length;
+                    }).map(escapeRE).join('|') + ')'
+            + '($|' + UNICODE_PUNCT_RE + '|' + UNICODE_SPACE_RE +
+                    '|[' + OTHER_CHARS.split('').map(escapeRE).join('') + '])';
+
+    reg = new RegExp(regText, 'g');
 
     for (j = 0, l = blockTokens.length; j < l; j++) {
       if (blockTokens[j].type !== 'inline') { continue; }
@@ -108,7 +107,7 @@ module.exports = function sub_plugin(md) {
         if (!regSimple.test(text)) { continue; }
 
         while ((m = reg.exec(text))) {
-          if (reg.lastIndex > pos) {
+          if (m.index > 0 || m[1].length > 0) {
             token         = new state.Token('text', '', 0);
             token.content = text.slice(pos, m.index + m[1].length);
             nodes.push(token);
@@ -125,7 +124,8 @@ module.exports = function sub_plugin(md) {
           token         = new state.Token('abbr_close', 'abbr', -1);
           nodes.push(token);
 
-          pos = reg.lastIndex - m[3].length;
+          reg.lastIndex -= m[3].length;
+          pos = reg.lastIndex;
         }
 
         if (!nodes.length) { continue; }

@@ -79,6 +79,17 @@ foobar
 .
 
 
+Prefer earlier abbr definitions
+.
+foo
+
+*[foo]: bar
+*[foo]: baz
+.
+<p><abbr title="bar">foo</abbr></p>
+.
+
+
 Interaction with linkifier:
 .
 http://example.com/foo/
@@ -86,6 +97,17 @@ http://example.com/foo/
 *[foo]: something
 .
 <p><a href="http://example.com/foo/">http://example.com/<abbr title="something">foo</abbr>/</a></p>
+.
+
+
+Punctuation as a part of abbr
+.
+"foo" "bar"
+
+*["foo"]: 123
+*["bar"]: 456
+.
+<p><abbr title="123">&quot;foo&quot;</abbr> <abbr title="456">&quot;bar&quot;</abbr></p>
 .
 
 
@@ -99,11 +121,36 @@ __proto__ \_\_proto\_\_
 .
 
 
-Security 1
+Security 2
 .
 *[hasOwnProperty]: blah
 
 hasOwnProperty
 .
 <p><abbr title="blah">hasOwnProperty</abbr></p>
+.
+
+
+Coverage 1
+.
+*[
+
+*[test
+
+*<test>
+.
+<p>*[</p>
+<p>*[test</p>
+<p>*&lt;test&gt;</p>
+.
+
+
+Coverage 2
+.
+[] \[\]
+
+*[[]]: test
+.
+<p>[] []</p>
+<p>*[[]]: test</p>
 .
