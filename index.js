@@ -3,18 +3,17 @@
 'use strict';
 
 
-// ASCII characters in Cc, Sc, Sm, Sk categories we should terminate on;
-// you can check character classes here:
-// http://www.unicode.org/Public/UNIDATA/UnicodeData.txt
-var OTHER_CHARS      = ' \r\n$+<=>^`|~';
-
-var UNICODE_PUNCT_RE = require('uc.micro/categories/P/regex').source;
-var UNICODE_SPACE_RE = require('uc.micro/categories/Z/regex').source;
-
-
 module.exports = function sub_plugin(md) {
   var escapeRE        = md.utils.escapeRE,
       arrayReplaceAt  = md.utils.arrayReplaceAt;
+
+  // ASCII characters in Cc, Sc, Sm, Sk categories we should terminate on;
+  // you can check character classes here:
+  // http://www.unicode.org/Public/UNIDATA/UnicodeData.txt
+  var OTHER_CHARS      = ' \r\n$+<=>^`|~';
+
+  var UNICODE_PUNCT_RE = md.utils.lib.ucmicro.P.source;
+  var UNICODE_SPACE_RE = md.utils.lib.ucmicro.Z.source;
 
 
   function abbr_def(state, startLine, endLine, silent) {
