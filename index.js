@@ -105,7 +105,7 @@ module.exports = function sub_plugin(md) {
         // in the current token
         if (!regSimple.test(text)) { continue; }
 
-        while ((m = reg.exec(text))) {
+        while ((m = reg.exec(text)) !== null) {
           if (m.index > 0 || m[1].length > 0) {
             token         = new state.Token('text', '', 0);
             token.content = text.slice(pos, m.index + m[1].length);
@@ -124,6 +124,9 @@ module.exports = function sub_plugin(md) {
           nodes.push(token);
 
           reg.lastIndex -= m[3].length;
+          if (m.index === reg.lastIndex) {
+            reg.lastIndex++;
+          }
           pos = reg.lastIndex;
         }
 
