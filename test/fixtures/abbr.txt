@@ -111,6 +111,43 @@ Punctuation as a part of abbr
 .
 
 
+Trailing spaces inside abbreviation
+.
+*[ test ]: foo bar
+
+test test test
+test  test  test
+.
+<p>test test test
+test <abbr title="foo bar"> test </abbr> test</p>
+.
+
+
+Abbreviation that consists of only spaces
+.
+*[ ]: foo bar
+
+test test test
+test  test  test
+test   test   test
+.
+<p>test test test
+test  test  test
+test <abbr title="foo bar"> </abbr> test <abbr title="foo bar"> </abbr> test</p>
+.
+
+
+Empty abbreviations should not be processed as such
+.
+*[]: test
+
+(foo bar)
+.
+<p>*[]: test</p>
+<p>(foo bar)</p>
+.
+
+
 Security 1
 .
 *[__proto__]: blah

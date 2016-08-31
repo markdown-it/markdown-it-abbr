@@ -48,6 +48,7 @@ module.exports = function sub_plugin(md) {
 
     label = state.src.slice(labelStart, labelEnd).replace(/\\(.)/g, '$1');
     title = state.src.slice(labelEnd + 2, max).trim();
+    if (label.length === 0) { return false; }
     if (title.length === 0) { return false; }
     if (!state.env.abbreviations) { state.env.abbreviations = {}; }
     // prepend ':' to avoid conflict with Object.prototype members

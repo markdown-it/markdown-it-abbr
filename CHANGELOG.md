@@ -1,3 +1,9 @@
+1.0.4 / 2016-08-31
+------------------
+
+- Fixed infinite loop caused by empty abbreviations like `*[]: foo`. Empty abbreviations are no longer parsed.
+
+
 1.0.3 / 2016-01-05
 ------------------
 
