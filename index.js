@@ -2,8 +2,16 @@
 //
 'use strict';
 
-
-module.exports = function sub_plugin(md) {
+/**
+* @param {*} md The markdown-it plugin instance.
+* @param {Object=} abbrDefList A list of abbreviations and their definitions 
+*   {"HTML": "Hyper Text Markup Language", "W3C": "World Wide Web Consortium"}. 
+*   It will be merged with the reference style abbreviation definitions like `*[HTML]: Hyper Text Markup Language` 
+*   inside the markdown files (file definitions overwrite existing list definitions by default).
+* @param {boolean=} [listPriorsFile=false] If false (default) definitions inside the markdown file overwrite 
+*   existing list definitions. If true list definitions overwrite existing definitions in the markdown file. 
+*/
+module.exports = function sub_plugin(md, abbrDefList, listPriorsFile) {
   var escapeRE        = md.utils.escapeRE,
       arrayReplaceAt  = md.utils.arrayReplaceAt;
 
@@ -15,6 +23,16 @@ module.exports = function sub_plugin(md) {
   var UNICODE_PUNCT_RE = md.utils.lib.ucmicro.P.source;
   var UNICODE_SPACE_RE = md.utils.lib.ucmicro.Z.source;
 
+  if (abbrDefList) {
+    // prepend ':' to avoid conflict with Object.prototype members
+    Object.keys(abbrDefList).forEach(key => {
+      if (!key.startsWith(':')) {
+        Object.defineProperty(abbrDefList, ':' + key,
+            Object.getOwnPropertyDescriptor(abbrDefList, key));
+        delete abbrDefList[key];
+      }
+    });    
+  }
 
   function abbr_def(state, startLine, endLine, silent) {
     var label, title, ch, labelStart, labelEnd,
@@ -66,7 +84,20 @@ module.exports = function sub_plugin(md) {
         currentToken,
         blockTokens = state.tokens;
 
-    if (!state.env.abbreviations) { return; }
+    if (!state.env.abbreviations && !abbrDefList) {
+      // no defs at all
+      return;
+    }
+    else if (!state.env.abbreviations && abbrDefList) {
+      // use specified list 
+      state.env.abbreviations = abbrDefList; 
+    }
+    else if (state.env.abbreviations && abbrDefList) {
+      // merge file defs with list defs based on priority
+      state.env.abbreviations = (listPriorsFile) 
+        ? Object.assign(state.env.abbreviations, abbrDefList) // list defs prior file defs
+        : Object.assign(abbrDefList, state.env.abbreviations); // file defs prior list defs
+    }
 
     regSimple = new RegExp('(?:' +
       Object.keys(state.env.abbreviations).map(function (x) {
