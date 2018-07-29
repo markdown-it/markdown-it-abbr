@@ -44,6 +44,29 @@ var md = require('markdown-it')()
 md.render(/*...*/) // see example above
 ```
 
+### Pass a json list of abbr definitions
+
+```js
+var abbrDefList = {
+    "HTML": "Hyper Text Markup Language",
+    "W3C": "World Wide Web Consortium"
+};
+
+var md = require('markdown-it')()
+            .use(require('markdown-it-abbr'), abbrDefList);
+
+md.render(/*...*/) // see example above
+```
+
+The list will be merged with the reference style abbreviation definitions like `*[HTML]: Hyper Text Markup Language` 
+inside the markdown files (file definitions overwrite existing list definitions by default). To let list definitions overwrite existing definitions in the markdown file instead, pass a third argument `listPriorsFile` with `true`:
+
+```js
+var md = require('markdown-it')()
+            .use(require('markdown-it-abbr'), abbrDefList, true);
+```
+
+
 _Differences in browser._ If you load script directly into the page, without
 package system, module will add itself globally as `window.markdownitAbbr`.
 
