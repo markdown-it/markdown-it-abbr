@@ -1,0 +1,22 @@
+extends: standard
+
+overrides:
+  -
+    files: [ '*.mjs' ]
+    rules:
+      no-restricted-globals: [ 2, require, __dirname ]
+  -
+    files: [ 'test/**' ]
+    env: { mocha: true }
+  -
+    files: [ 'lib/**', 'index.mjs' ]
+    parserOptions: { ecmaVersion: 2015 }
+
+ignorePatterns:
+  - demo/
+  - dist/
+  - benchmark/extra/
+
+rules:
+  camelcase: 0
+  no-multi-spaces: 0
