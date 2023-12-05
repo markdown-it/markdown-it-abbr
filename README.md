@@ -1,6 +1,6 @@
 # markdown-it-abbr
 
-[![Build Status](https://img.shields.io/travis/markdown-it/markdown-it-abbr/master.svg?style=flat)](https://travis-ci.org/markdown-it/markdown-it-abbr)
+[![CI](https://github.com/markdown-it/markdown-it-abbr/actions/workflows/ci.yml/badge.svg)](https://github.com/markdown-it/markdown-it-abbr/actions/workflows/ci.yml)
 [![NPM version](https://img.shields.io/npm/v/markdown-it-abbr.svg?style=flat)](https://www.npmjs.org/package/markdown-it-abbr)
 [![Coverage Status](https://img.shields.io/coveralls/markdown-it/markdown-it-abbr/master.svg?style=flat)](https://coveralls.io/r/markdown-it/markdown-it-abbr?branch=master)
 
