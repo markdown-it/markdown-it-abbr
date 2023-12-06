@@ -10,15 +10,6 @@ is maintained by the <abbr title="World Wide Web Consortium">W3C</abbr>.</p>
 .
 
 
-#They can contain arbitrary markup (see pandoc implementation):
-#.
-#*[`\]:`]: foo
-#\`]:\`
-#.
-#<p><abbr title="foo">`]:`</abbr></p>
-#.
-
-
 No empty abbreviations:
 .
 *[foo]:
@@ -148,17 +139,7 @@ Empty abbreviations should not be processed as such
 .
 
 
-#Security 1
-#.
-#*[__proto__]: blah
-#
-#__proto__ \_\_proto\_\_
-#.
-#<p><strong>proto</strong> <abbr title="blah">__proto__</abbr></p>
-#.
-
-
-Security 2
+Security
 .
 *[hasOwnProperty]: blah
 
